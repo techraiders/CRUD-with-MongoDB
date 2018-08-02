@@ -17,12 +17,27 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
 
 const Course = mongoose.model('Course', coursesSchema);
 
-async function getPublishedCourses () {
+// Get all the published courses whoose price is $15 or more, and have the word 'by' in the title
+
+async function getCoursesByPriceAndTitle () {
+  return await Course
+    .find({isPublished: true})
+    .or([
+      {price: {$gte: 15}},
+      {name:/.*by.*/i}
+    ])
+    .sort('-price')
+    .select('name author price');
+}
+
+getCoursesByPriceAndTitle().then(courses => console.log(courses));
+
+/* async function getPublishedCourses () {
   return await Course
     .find({isPublished: true, tags: {$in: ['frontend', 'backend']}})
     /* .find ({isPublished: true})
     .or([{tags: 'frontend'}, {tags: 'backend'}])
-    .or([{author: 'Mosh'}, {isPublushed: true}]) for searching using different properties */
+    .or([{author: 'Mosh'}, {isPublushed: true}]) for searching using different properties
     .sort('-price')
     .select('name author tags');
 }
@@ -31,7 +46,7 @@ getPublishedCourses().then(courses => {
   console.log(courses);
 });
 
-/*
+
 async function getCourses () {
   return await Course
   .find({isPublished: true, tags: 'backend'})
@@ -43,7 +58,7 @@ async function run () {
   const courses = await getCourses();
   console.log(courses);
 }
-run(); 
+//run(); 
 
 getCourses().then(data => console.log(data)); */
 
