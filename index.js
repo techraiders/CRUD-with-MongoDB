@@ -17,16 +17,12 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
 
 const Course = mongoose.model('Course', coursesSchema);
 
-async function getCourses () {
-  return await Course
-  .find({isPublished: true, tags: 'backend'})
-  .sort({name: 1}) // or .sort(name) or .sort('-name')
-  .select({name: 1, author: 1}); // or select('name author')
-}
-
 async function getPublishedCourses () {
   return await Course
     .find({isPublished: true, tags: {$in: ['frontend', 'backend']}})
+    /* .find ({isPublished: true})
+    .or([{tags: 'frontend'}, {tags: 'backend'}])
+    .or([{author: 'Mosh'}, {isPublushed: true}]) for searching using different properties */
     .sort('-price')
     .select('name author tags');
 }
@@ -35,7 +31,15 @@ getPublishedCourses().then(courses => {
   console.log(courses);
 });
 
-/*async function run () {
+/*
+async function getCourses () {
+  return await Course
+  .find({isPublished: true, tags: 'backend'})
+  .sort({name: 1}) // or .sort(name) or .sort('-name')
+  .select({name: 1, author: 1}); // or select('name author')
+}
+
+async function run () {
   const courses = await getCourses();
   console.log(courses);
 }
