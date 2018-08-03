@@ -21,7 +21,16 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
       enum: ['web', 'mobile', 'network']
     },
     author: String,
-    tags: [String],
+    // tags: [String],
+    tags: {
+      type: Array, // here mongoose initialises this with empty array
+      validate: {
+        validator: function (v) {
+          return v && v.length;
+        },
+        message: 'A course should have at least one tag.'
+      }
+    },
     date: Date,
     isPublished: Boolean,
 
@@ -41,9 +50,9 @@ const Course = mongoose.model('Course', coursesSchema);
 async function createCourse () {
   let course = new Course({
     name: 'Angular Course',
-    category: '-',
+    category: 'web',
     author: 'Mosh',
-    tags: ['angular', 'frontend'],
+    tags: null,
     isPublished: true,
     price: 15
   });
