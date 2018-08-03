@@ -25,8 +25,14 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
     tags: {
       type: Array, // here mongoose initialises this with empty array
       validate: {
-        validator: function (v) {
-          return v && v.length;
+        isAsync: true,
+        validator: function (v, callback) {
+          setTimeout(() => {
+            // Do some async work
+            const result = v && v.length;
+            callback(result); // validation fails when false is passed as an argument to this callback function
+          }, 4000);
+          // return v && v.length;
         },
         message: 'A course should have at least one tag.'
       }
