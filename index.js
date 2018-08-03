@@ -7,30 +7,58 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
   });
 
   const coursesSchema = new mongoose.Schema({
-    name: String,
+    // name: String,
+    name: {type: String, required: true},
     author: String,
     tags: [String],
     date: Date,
     isPublished: Boolean,
-    price: Number
+
+    // Makes price required only if course is published
+    price: {
+      type: Number,
+      required: function () {
+        return this.isPublished;
+      }
+    }
   });
 
 const Course = mongoose.model('Course', coursesSchema);
 
-// Get all the published courses whoose price is $15 or more, and have the word 'by' in the title
+async function createCourse () {
+  let course = new Course({
+    //name: 'Angular Course',
+    author: 'Mosh',
+    tags: ['angular', 'frontend'],
+    isPublished: true,
+    //price: 15
+  });
 
-async function getCoursesByPriceAndTitle () {
-  return await Course
-    .find({isPublished: true})
-    .or([
-      {price: {$gte: 15}},
-      {name:/.*by.*/i}
-    ])
-    .sort('-price')
-    .select('name author price');
+  try {
+    course = await course.save();
+    console.log(course);
+  } catch (e) {
+    console.log(e.message);
+  }
 }
 
-getCoursesByPriceAndTitle().then(courses => console.log(courses));
+createCourse();
+
+// Get all the published courses whoose price is $15 or more, and have the word 'by' in the title
+
+// async function getCoursesByPriceAndTitle () {
+//   return await Course
+//     .find({isPublished: true})
+//     .or([
+//       {price: {$gte: 15}},
+//       {name:/.*by.*/i}
+//     ])
+//     .sort('-price')
+//     .select('name author price');
+// }
+
+// getCoursesByPriceAndTitle().then(courses => console.log(courses));
+
 
 /* async function getPublishedCourses () {
   return await Course
