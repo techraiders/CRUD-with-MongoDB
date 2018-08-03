@@ -18,7 +18,10 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
     category: {
       type: String,
       required: true,
-      enum: ['web', 'mobile', 'network']
+      enum: ['web', 'mobile', 'network'],
+      lowercase: true,
+      // uppercase: true,
+      trim: true
     },
     author: String,
     // tags: [String],
@@ -47,7 +50,9 @@ mongoose.connect('mongodb://localhost/mongo-exercises')
         return this.isPublished;
       },
       min: 10,
-      max: 20
+      max: 20,
+      get: value => Math.round(value),
+      set: value => Math.round(value)
     }
   });
 
@@ -56,18 +61,21 @@ const Course = mongoose.model('Course', coursesSchema);
 async function createCourse () {
   let course = new Course({
     name: 'Angular Course',
-    category: 'web',
+    category: 'WEB',
     author: 'Mosh',
-    tags: null,
+    tags: ['Front End'],
     isPublished: true,
-    price: 15
+    price: 15.8
   });
 
   try {
     course = await course.save();
     console.log(course);
   } catch (e) {
-    console.log(e.message);
+    // console.log(e.message);
+    for (let field in e.errors) {
+      console.log(e.errors[field].message);
+    }
   }
 }
 
